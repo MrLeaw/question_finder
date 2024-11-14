@@ -1,0 +1,87 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'all.json'
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+
+# should build for windows, linux and macos and arm64 and amd64 each
+# and add to releases on github
+
+jobs:
+  build-mac-linux:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        arch: [x64, arm64]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    - name: Install dependencies
+      run: cargo build --release
+    #- name: Run tests
+    #  run: cargo test
+    - name: Build
+      run: cargo build --release
+    - name: Archive
+      run: zip -r ${{ runner.os }}-${{ matrix.arch }}-release.zip target/release/question-finder
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ runner.os }}-${{ matrix.arch }}-release
+        path: ${{ runner.os }}-${{ matrix.arch }}-release.zip
+    - name: Upload Release
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ runner.os }}-${{ matrix.arch }}-release.zip
+        token: ${{ secrets.PAT }}
+        tag_name: ${{ github.run_id }}-${{ github.run_attempt }}
+  build-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        arch: [x64, arm64]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    - name: Install dependencies
+      run: cargo build --release
+    #- name: Run tests
+    #  run: cargo test
+    - name: Build
+      run: cargo build --release
+    - name: Archive
+      run: powershell Compress-Archive -Path target/release/question-finder.exe -DestinationPath ${{ runner.os }}-${{ matrix.arch }}-release.zip
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ runner.os }}-${{ matrix.arch }}-release
+        path: ${{ runner.os }}-${{ matrix.arch }}-release.zip
+    - name: Upload Release
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ runner.os }}-${{ matrix.arch }}-release.zip
+        token: ${{ secrets.PAT }}
+        tag_name: ${{ github.run_id }}-${{ github.run_attempt }}
+        
