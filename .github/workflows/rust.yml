@@ -37,7 +37,7 @@ jobs:
     - name: Build
       run: cargo build --release
     - name: Archive
-      run: zip -r ${{ runner.os }}-${{ matrix.arch }}-release.zip target/release/question-finder
+      run: zip -r ${{ runner.os }}-${{ matrix.arch }}-release.zip target/release/question_finder
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -71,7 +71,7 @@ jobs:
     - name: Build
       run: cargo build --release
     - name: Archive
-      run: powershell Compress-Archive -Path target/release/question-finder.exe -DestinationPath ${{ runner.os }}-${{ matrix.arch }}-release.zip
+      run: powershell Compress-Archive -Path target/release/question_finder.exe -DestinationPath ${{ runner.os }}-${{ matrix.arch }}-release.zip
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
