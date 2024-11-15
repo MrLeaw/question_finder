@@ -232,7 +232,7 @@ fn main() {
             let first = matches[0];
             let answers_match: bool = matches
                 .iter()
-                .all(|q| q.correct_answer == first.correct_answer);
+                .all(|q| q.answers[q.correct_answer] == first.answers[first.correct_answer]);
             if answers_match {
                 println!("{}", first.answers[first.correct_answer].bright_green());
             } else {
