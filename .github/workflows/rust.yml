@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
     paths-ignore:
-      - 'all.json'
+      - 'q.csv'
   pull_request:
     branches: [ "main" ]
 
